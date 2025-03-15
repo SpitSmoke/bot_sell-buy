@@ -1,10 +1,5 @@
-API_KEYS = {
-	'binance': {
-		'api_key': '', 
-		'api_secret': ''
-	},
-	'okx': {
-	'api_key': '',
-	'api_secret': ''
-}
-} 
+BINANCE_API_KEY = "iTip94XCRLQStvYpOPfLq1NiimSRB6tJW0Jn0Fjxdvu4ccV8M2D0UjA6TM6r6tbG"
+BINANCE_SECRET = "ydJqKCCCbOPbMek7ZSOamrtJViG7swZTmSj3yDpnrEjwWkWZRw07nWP8BCPHnmgq"
+
+KUCOIN_API_KEY = "67d246e4817fd6000189e14e"
+KUCOIN_SECRET = "53c70839-2761-432f-9e1a-15383062c4bd"
