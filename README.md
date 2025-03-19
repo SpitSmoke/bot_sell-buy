@@ -1,7 +1,7 @@
 # Bot de Arbitragem de Criptomoedas
 
 ## Descrição
-O **Bot de Arbitragem de Criptomoedas** é um sistema automatizado projetado para identificar e executar operações de arbitragem entre diferentes corretoras, permitindo que os usuários obtenham lucro explorando diferenças de preço entre elas.
+O **Bot de Arbitragem de Criptomoedas** é um sistema privado e exclusivo, desenvolvido para identificar e executar operações de arbitragem entre diferentes corretoras de criptomoedas, permitindo ao usuário explorar diferenças de preços para obter lucro.
 
 O projeto inclui:
 - **Execução Automática** de ordens de compra e venda.
@@ -30,22 +30,10 @@ O projeto inclui:
 - **Alertas e Notificações**: Opção futura para enviar alertas via Telegram, WhatsApp ou pop-ups.
 
 ## Instalação
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/bot-arbitragem.git
-   cd bot-arbitragem
-   ```
-2. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Execute o bot:
-   ```bash
-   python main.py
-   ```
+Este projeto é particular e não está disponível para distribuição pública. Caso tenha permissão de uso, siga as instruções internas para instalação e configuração.
 
 ## Configuração
-Antes de rodar o bot, configure suas chaves de API diretamente pela interface do aplicativo.
+Antes de rodar o bot, configure suas chaves de API diretamente pela interface do aplicativo. O acesso ao sistema requer ativação por meio de um código exclusivo.
 
 ## Uso
 1. **Inicie o bot** e insira suas credenciais.
@@ -57,14 +45,15 @@ Antes de rodar o bot, configure suas chaves de API diretamente pela interface do
 - Nunca compartilhe suas API Keys.
 - Habilite **somente permissões de leitura e trading** na API das corretoras.
 - O bot **não solicita permissão de saque**, garantindo mais segurança.
+- O código de ativação é único e intransferível.
 
 ## Futuras Melhorias
 - Suporte a mais corretoras.
 - Integração com WebSocket para respostas mais rápidas.
 - Implementação de módulo de Machine Learning para otimizar operações.
 
-## Licença
-Este projeto está licenciado sob a **MIT License**. Sinta-se livre para modificar e contribuir!
+## Direitos Autorais
+Este projeto é **privado** e **não pode ser redistribuído ou compartilhado** sem autorização.
 
 ## Contato
 Caso tenha dúvidas ou sugestões, entre em contato pelo e-mail: **jmfelicio.sp@gmail.com**.
