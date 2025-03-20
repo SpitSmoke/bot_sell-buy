@@ -3,13 +3,16 @@ import threading
 import time
 import json
 import os
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QMessageBox
+import csv
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QTextEdit, QLineEdit, QMessageBox , QComboBox, QTableWidgetItem, QTableWidget
 from PyQt6.QtCore import QTimer
+from crypto_utils import encrypt_data
 from exchanges import get_price
 from activation import check_activation, is_bot_activated  # Importa função que verifica ativação
 
 PAIR = "BTC/USDT"
 CONFIG_FILE = "config.json"
+HISTORY_FILE = "historico.csv"
 
 class BotApp(QWidget):
     def __init__(self):
@@ -78,6 +81,20 @@ class BotApp(QWidget):
         if self.api_keys_loaded:
             self.hide_api_key_fields()  
 
+        self.button_clear_history = QPushButton('Limpar Histórico', self)
+        self.button_clear_history.clicked.connect(self.clear_history)
+        self.layout.addWidget(self.button_clear_history)
+
+
+
+        self.history_table = QTableWidget(self)
+        self.history_table.setColumnCount(5)
+        self.history_table.setHorizontalHeaderLabels(["Símbolo", "Ação", "Quantidade", "Preço", "Exchange"])
+        self.load_history()
+
+        self.layout.addWidget(self.history_table)
+
+
         self.button_start = QPushButton('Iniciar Bot', self)
         self.button_stop = QPushButton('Parar Bot', self)
         self.button_start.clicked.connect(self.start_bot)
@@ -89,6 +106,13 @@ class BotApp(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_prices)
         self.timer.start(5000)
+
+        # Dropdown para selecionar o par de criptomoedas
+        self.pair_selector = QComboBox(self)
+        self.pair_selector.addItems(["BTC/USDT", "ETH/USDT", "BNB/USDT", "ADA/USDT", "XRP/USDT", "SOL/USDT", "DOT/USDT"])
+        self.pair_selector.currentTextChanged.connect(self.update_selected_pair)
+
+        self.layout.addWidget(self.pair_selector)
 
         self.layout.addWidget(self.label_status)
         self.layout.addWidget(self.label_binance)
@@ -102,6 +126,67 @@ class BotApp(QWidget):
         self.layout.addWidget(self.button_start)
         self.layout.addWidget(self.button_stop)
         self.layout.addWidget(self.log_box)
+
+    
+    def clear_history(self):
+        """ Limpa o histórico de operações """
+        open(HISTORY_FILE, mode='w').close()
+        self.load_history()
+        QMessageBox.information(self, "Sucesso", "✅ Histórico limpo com sucesso!")
+
+        self.load_history()
+
+    def save_trade(simbol, action, amount, price, exchange):
+        """Salva a operação no historico"""
+        with open(HISTORY_FILE, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([simbol, action, amount, price, exchange, time.strftime("%Y-%m-%d %H:%M:%S")])
+
+    def check_existing_keys(self):
+        """ Verifica se já existem API Keys salvas """
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, "r") as f:
+                data = json.load(f)
+                required_keys = ["binance_api_key", "binance_api_secret", "kucoin_api_key", "kucoin_api_secret"]
+                return all(data.get(key) for key in required_keys)
+        return False
+    
+    def update_selected_pair(self, pair):
+        self.update_selected_pair = pair
+        self.log_message(f"Par de criptomoedas selecionado: {pair}")
+
+    def save_keys(self):
+        """ Salva as API Keys no arquivo config.json """
+        config_data = {
+            "binance_api_key": encrypt_data(self.input_binance_key.text()),
+            "binance_api_secret": encrypt_data(self.input_binance_secret.text()),
+            "kucoin_api_key": encrypt_data(self.input_kucoin_key.text()),
+            "kucoin_api_secret": encrypt_data(self.input_kucoin_secret.text()),
+    }
+
+        with open(CONFIG_FILE, "w") as f:
+            json.dump(config_data, f, indent=4)
+
+        QMessageBox.information(self, "Sucesso", "✅ API Keys salvas com sucesso!")
+        self.hide_api_key_fields()
+
+    def hide_api_key_fields(self):
+        """ Esconde os campos de entrada de API Keys e mostra o botão de edição """
+        self.input_binance_key.hide()
+        self.input_binance_secret.hide()
+        self.input_kucoin_key.hide()
+        self.input_kucoin_secret.hide()
+        self.button_save_keys.hide()
+        self.button_edit_keys.show()  
+
+    def show_api_key_fields(self):
+        """ Exibe os campos de entrada de API Keys para edição """
+        self.input_binance_key.show()
+        self.input_binance_secret.show()
+        self.input_kucoin_key.show()
+        self.input_kucoin_secret.show()
+        self.button_save_keys.show()
+        self.button_edit_keys.hide()  
 
     def update_prices(self):
         """ Atualiza os preços das exchanges na interface """
@@ -117,6 +202,22 @@ class BotApp(QWidget):
             self.label_kucoin.setText(f'KuCoin: ${price_kucoin:.2f}')
         else:
             self.label_kucoin.setText('KuCoin: Erro ao buscar preço')
+
+    def load_history(self):
+        """ Carega o historico de operações na tabela """
+        self.history_table.setRowCount(0)
+
+        try:
+            with open(HISTORY_FILE, mode='r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    row_position = self.history_table.rowCount()
+                    self.history_table.insertRow(row_position)
+                    for col, data in enumerate(row[:5]):
+                        self.history_table.setItem(row_position, col, QTableWidgetItem(str(data)))
+        except FileNotFoundError:
+            pass
+
 
     def log_message(self, message):
         """ Exibe mensagens de log na interface """
